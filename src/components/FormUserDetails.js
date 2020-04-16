@@ -5,9 +5,38 @@ import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 
 export class FormUserDetails extends Component {
+  validateForm = () => {
+    const { values } = this.props;
+
+    let isError = false;
+    const errors = {};
+
+    if (values.firstName.length < 5) {
+      isError = true;
+      values.firstNameError = 'First name minimum 5';
+    }
+
+    if (values.email.indexOf('@') === -1) {
+      isError = true;
+      values.emailError = 'Required valid e-mail';
+    }
+
+    if (isError) {
+      this.setState({
+        ...this.state,
+        ...errors,
+      });
+    }
+
+    return isError;
+  };
+
   continue = e => {
     e.preventDefault();
-    this.props.nextStep();
+    const errValidationForm = this.validateForm();
+    if (!errValidationForm) {
+      this.props.nextStep();
+    }
   };
 
   render() {
@@ -20,6 +49,7 @@ export class FormUserDetails extends Component {
             hintText='enter your first name'
             floatingLabelText='first name'
             onChange={handleChange('firstName')}
+            errorText={values.firstNameError}
             defaultValue={values.firstName}
           />
           <br />
@@ -34,6 +64,7 @@ export class FormUserDetails extends Component {
             hintText='enter your email'
             floatingLabelText='email'
             onChange={handleChange('email')}
+            errorText={values.emailError}
             defaultValue={values.email}
           />
           <br />
